@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useSearchParams, Link } from "react-router-dom";
 import { dummyProfileData } from "../assets/assets";
 import {
   MenuIcon,
@@ -9,29 +9,46 @@ import {
   SettingsIcon,
   ChevronRightIcon,
   LogOutIcon,
+  CalendarIcon,
+  FileTextIcon,
+  CreditCardIcon,
 } from "lucide-react";
 
 const Sidebar = () => {
   const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
   const [userName, setUserName] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const role = searchParams.get("role") === "admin" ? "ADMIN" : "EMPLOYEE";
 
   useEffect(() => {
     setUserName(dummyProfileData.firstName + " " + dummyProfileData.lastName);
   }, []);
 
-  // close mobile sidebar when route changes
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
-  const role = "ADMIN" || "Employees";
-  const navItems = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutGridIcon },
-    role === "ADMIN"
-      ? { name: "Employees", href: "/employees", icon: UserIcon }
-      : null,
+
+  const adminNavItems = [
+    { name: "Dashboard", href: "/dashboard?role=admin", icon: LayoutGridIcon },
+    { name: "Employees", href: "/employees", icon: UserIcon },
     { name: "Settings", href: "/settings", icon: SettingsIcon },
   ];
+
+  const employeeNavItems = [
+    {
+      name: "Dashboard",
+      href: "/dashboard?role=employee",
+      icon: LayoutGridIcon,
+    },
+    { name: "Attendance", href: "/attendance", icon: CalendarIcon },
+    // { name: "Leaves", href: "/leaves", icon: FileTextIcon },
+    // { name: "Payslips", href: "/payslips", icon: CreditCardIcon },
+    { name: "Settings", href: "/settings", icon: SettingsIcon },
+  ];
+
+  const navItems = role === "ADMIN" ? adminNavItems : employeeNavItems;
 
   const handleLogout = () => {
     window.location.href = "/login";
@@ -40,7 +57,7 @@ const Sidebar = () => {
   const sidebarContent = (
     <>
       {/* brand header */}
-      <div className="px-5 pt-6 pb-5 border-b border-white/6">
+      <div className="px-5 pt-6 pb-5 border-b border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <UserIcon className="text-white size-7" />
@@ -48,13 +65,11 @@ const Sidebar = () => {
               <p className="font-semibold text-[13px] text-white tracking-wide">
                 Employee MS
               </p>
-              <p className="text-[11px] text-slate-500 font-medium ">
-                {" "}
+              <p className="text-[11px] text-slate-500 font-medium">
                 Management System
               </p>
             </div>
           </div>
-          {/* close button on mobile */}
           <button
             onClick={() => setMobileOpen(false)}
             className="lg:hidden text-slate-400 hover:text-white p-1"
@@ -66,7 +81,7 @@ const Sidebar = () => {
 
       {/* user profile card */}
       {userName && (
-        <div className="mx-3 mt-4 mb-1 rounded-lg bg-white/3 border border-whie/4">
+        <div className="mx-3 mt-4 mb-1 p-3 rounded-lg bg-white/5 border border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center ring-1 ring-white/10 shrink-0">
               <span className="text-slate-400 text-xs font-semibold">
@@ -78,14 +93,14 @@ const Sidebar = () => {
                 {userName}
               </p>
               <p className="text-[11px] text-slate-500 truncate">
-                {role === "Admin" ? "Administrator" : "Employee"}
+                {role === "ADMIN" ? "Administrator" : "Employee"}
               </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* navigation */}
+      {/* navigation label */}
       <div className="px-5 pt-5 pb-2">
         <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
           Navigation
@@ -95,40 +110,37 @@ const Sidebar = () => {
       {/* navigation list */}
       <div className="flex-1 px-3 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const isActive = pathname === item.href.split("?")[0];
           return (
             <Link
               key={item.name}
               to={item.href}
               className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium transition-all duration-150 relative ${
                 isActive
-                  ? "bg-indigo-500/12 text-indigo-300"
-                  : "text-slate-300 hover:bg-slate-700/50 hover:text-white hover:bg-white/4"
+                  ? "bg-indigo-500/10 text-indigo-300"
+                  : "text-slate-300 hover:bg-white/5 hover:text-white"
               }`}
             >
               {isActive && (
-                <div className="absolute left-0 top1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-indigo-500" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-indigo-500" />
               )}
               <item.icon
-                className={`w-[17px] h-[17px] shrink-0 ${
-                  isActive
-                    ? "text-indigo-300"
-                    : "text-slate-400 group-hover:text-slate-300"
-                }`}
+                className={`w-[17px] h-[17px] shrink-0 ${isActive ? "text-indigo-300" : "text-slate-400 group-hover:text-slate-300"}`}
               />
-              <span className="flex-1"> {item.name}</span>
+              <span className="flex-1">{item.name}</span>
               {isActive && (
-                <ChevronRightIcon className="w-3.5 h=3.5 text-indigo-500/50"></ChevronRightIcon>
+                <ChevronRightIcon className="w-3.5 h-3.5 text-indigo-500/50" />
               )}
             </Link>
           );
         })}
       </div>
+
       {/* logout */}
-      <div className="p-3 border-t border-white/6">
+      <div className="p-3 border-t border-white/10">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-[13px] font-medium text-slate-400 hover:text-ros-400 hover:bg-rose-500/8 transition-all duration-150"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-[13px] font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all duration-150"
         >
           <LogOutIcon className="w-[17px] h-[17px]" />
           <span>Logout</span>
@@ -139,7 +151,6 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* mobile hamburger button */}
       <button
         onClick={() => setMobileOpen(true)}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-slate-900 text-white rounded-lg shadow-lg border border-white/10"
@@ -147,23 +158,19 @@ const Sidebar = () => {
         <MenuIcon size={20} />
       </button>
 
-      {/* mobile overlay */}
       {mobileOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           onClick={() => setMobileOpen(false)}
-        ></div>
+        />
       )}
 
-      {/* sidebar desktop */}
-      <aside className="hidden lg:flex flex-col h-full w-65 bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white shrink-0 border-r border-white/40">
+      <aside className="hidden lg:flex flex-col h-full w-64 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white shrink-0 border-r border-white/10">
         {sidebarContent}
       </aside>
-      {/* sidebar mobile */}
+
       <aside
-        className={`lg:hidden fixed inset-y-0 left-0 w-72 bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white z-50 flex flex-col transform transition-transform duration-300 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`lg:hidden fixed inset-y-0 left-0 w-72 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white z-50 flex flex-col transform transition-transform duration-300 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {sidebarContent}
       </aside>

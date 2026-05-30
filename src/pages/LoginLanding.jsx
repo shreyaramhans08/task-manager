@@ -1,73 +1,56 @@
-import LoginLeftSide from "../components/LoginLeftSide";
-import { ShieldIcon, UserIcon,  ArrowRightIcon } from "lucide-react";
-import {Link} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { ShieldCheck, UserCircle } from "lucide-react";
 
 const LoginLanding = () => {
-  const portalOptions = [
-    {
-      to: "/login/admin",
-      title: "Admin Portal",
-      description: "Manage employee, departments, and system configurations.",
-      icon: ShieldIcon,
-    },
-    {
-      to: "/login/employee",
-      title: "Employee Portal",
-      description: "View your profile, track attendance, request time off.",
-      icon: UserIcon,
-    },
-  ];
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      <LoginLeftSide />
-      <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 lg:p-16 relative overflow-y-auto min-h-screen">
-        <div className="w-full max-w-md animate-fade-in relative z-10">
-          {/* Header */}
-          <div className="mb-10 text-center md:text-left">
-            <h2 className="text-3xl font-medium text-slate-900 tracking-tight mb-3">
-              Welcome Back
-            </h2>
-            <p className="text-slate-500">
-              Select your portal to securely access the system
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 flex items-center justify-center p-6">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-2xl mb-4 shadow-lg shadow-indigo-500/30">
+            <UserCircle className="text-white" size={32} />
           </div>
+          <h1 className="text-3xl font-semibold text-white tracking-tight">
+            Employee MS
+          </h1>
+          <p className="text-slate-400 mt-2 text-sm">
+            Select your portal to continue
+          </p>
+        </div>
 
-          {/* Portals List */}
-          <div className="space-y-4">
-            {portalOptions.map((portal) => (
-              <Link
-                key={portal.to}
-                to={portal.to}
-                classNamegroup
-                block
-                bg-slate-50
-                border
-                border-slate-200rounded-lg
-                p-5
-                sm:p-6
-                transition-all
-                duration-300
-                hover:border-indigo-400
-                hover:bg-indigo-50
-              >
-                <div className="relative z-0 flex item-center justify-between gap-4 sm:gap-5">
-                  <h3 className="text-lg text-slate-800 group-hover:text-indigo-600 mb-1 transition-colors">
-                    {portal.title}
-                  </h3>
-                  <ArrowRightIcon
-                    className="w-4 h-4 text-slate-400 group-hover:text-indigo-600
-              group-hover:translate-x-1 transtion-all duration-300"
-                  />
-                </div>
-              </Link>
-            ))}
-          </div>
+        {/* Portal Buttons */}
+        <div className="space-y-4">
+          <button
+            onClick={() => navigate("/login/admin")}
+            className="w-full flex items-center gap-4 p-5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/50 rounded-xl backdrop-blur-sm transition-all duration-200 group"
+          >
+            <div className="w-10 h-10 bg-indigo-600/20 rounded-lg flex items-center justify-center group-hover:bg-indigo-600/40 transition-colors">
+              <ShieldCheck className="text-indigo-400" size={20} />
+            </div>
+            <div className="text-left">
+              <p className="text-white font-medium">Admin Portal</p>
+              <p className="text-slate-400 text-xs mt-0.5">
+                Manage employees and settings
+              </p>
+            </div>
+          </button>
 
-          {/* Footer */}
-          <div className="mt-12 tex-center md:text-left text-sm text-slate-400">
-            <p> {new Date().getFullYear()}</p>
-          </div>
+          <button
+            onClick={() => navigate("/login/employee")}
+            className="w-full flex items-center gap-4 p-5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-500/50 rounded-xl backdrop-blur-sm transition-all duration-200 group"
+          >
+            <div className="w-10 h-10 bg-indigo-600/20 rounded-lg flex items-center justify-center group-hover:bg-indigo-600/40 transition-colors">
+              <UserCircle className="text-indigo-400" size={20} />
+            </div>
+            <div className="text-left">
+              <p className="text-white font-medium">Employee Portal</p>
+              <p className="text-slate-400 text-xs mt-0.5">
+                View your profile and payslips
+              </p>
+            </div>
+          </button>
         </div>
       </div>
     </div>
